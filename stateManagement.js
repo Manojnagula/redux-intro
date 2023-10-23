@@ -1,13 +1,13 @@
 // only create store in this file.
 
-import { bindActionCreators, createStore } from "redux";
+import { bindActionCreators, combineReducers, createStore } from "redux";
 
 // to avoid typos store all action type names as variables and use those variables.
-const ADD_TODO = 'add_todo'
-const DELETE_TODO = 'delete_todo'
-const EDIT_TODO = 'edit_todo'
-const FINISH_TODO = 'finish_todo'
-function todoReducer(state, action) {
+const ADD_TODO = "add_todo";
+const DELETE_TODO = "delete_todo";
+const EDIT_TODO = "edit_todo";
+const FINISH_TODO = "finish_todo";
+function TodoReducer(state=[], action) {
   if (action.type == "ADD_TODO") {
     let nextId = state.length + 1;
     return [
@@ -37,7 +37,22 @@ function todoReducer(state, action) {
   return state;
 }
 
-const store = createStore(todoReducer, []);
+
+
+// Creating a User reducer to show how combineReducer works.
+
+function UserReducer(state=[], action) {
+  if (action.type == "add_user") {
+    let nextId = state.length + 1;
+    return [...state, {id:nextId, user:action.payload.user}];
+}
+return state
+}
+
+// Creating a combined reducer here
+const reducer = combineReducers({users: UserReducer, todos : TodoReducer})
+// passing combined reducer as argument to createStore
+const store = createStore(reducer);
 
 // store has four functions {dispatch, getState, subscribe, replaceReducer}
 
@@ -49,33 +64,34 @@ console.log(store.getState()); //prints state at that point of time.
 // prepared store using some reducer but now you want to replace that reducer with some other reducer. "replaceReducer()"
 
 // 4.subscribe "executes for every dispatch"
-store.subscribe(()=>console.log(store.getState()))
+store.subscribe(() => console.log(store.getState()));
 
 // 3.dispatch is used for triggering reducer with payload if rewuired.
-store.dispatch({type: 'ADD_TODO', payload:{todoText: 'todo 2'}})
-store.dispatch({type: 'ADD_TODO', payload:{todoText: 'todo 3'}})
+store.dispatch({ type: "ADD_TODO", payload: { todoText: "todo 2" } });
+store.dispatch({ type: "ADD_TODO", payload: { todoText: "todo 3" } });
 console.log(store.getState());
 
-
-
-//BIND-ACTOIN CREATERS 
+//BIND-ACTOIN CREATOS
 
 // Action creater instead of hardcoding the actions and to avoid code repeatation.
 
-const addTodo = function(todoText){
-    return {type: 'ADD_TODO', payload: {todoText: todoText}}
+const addTodo = function (todoText) {
+  return { type: "ADD_TODO", payload: { todoText: todoText } };
+};
 
-}
-
-store.dispatch(addTodo('todo 4'))
+store.dispatch(addTodo("todo 4"));
 
 // Action creater for deleteTodo.
-const deleteTodo = (id)=>({type: 'DELETE_TODO', payload : {id:id}})
-store.dispatch(deleteTodo("1"))
-store.dispatch(deleteTodo("2")) //Instead of calling creaters like this (affects readability), we can create bind action creaters
+const deleteTodo = (id) => ({ type: "DELETE_TODO", payload: { id: id } });
+store.dispatch(deleteTodo("1"));
+store.dispatch(deleteTodo("2")); //Instead of calling creaters like this (affects readability), we can create bind action creaters
 
-const actions = bindActionCreators({addTodo, deleteTodo}, store.dispatch)  //stores these actions inside dispatch with a key named "actions".
+// Action creater for adding user
+const addUser = (user)=>({type:'add_user', payload:{user:user}})
+
+const actions = bindActionCreators({ addTodo, deleteTodo,addUser }, store.dispatch); //stores these actions inside dispatch with a key named "actions".
 // We can access them using usinig actions word ,like this:
 
-actions.addTodo('todo 5')
-actions.deleteTodo("2")
+actions.addTodo("todo 5");
+actions.deleteTodo("2");
+actions.addUser("manoj")
