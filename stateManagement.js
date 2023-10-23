@@ -1,3 +1,5 @@
+// only create store in this file.
+
 import { createStore } from "redux";
 function todoReducer(state, action) {
   if (action.type == "add_todo") {
@@ -40,10 +42,11 @@ console.log(store.getState()); //prints state at that point of time.
 
 // prepared store using some reducer but now you want to replace that reducer with some other reducer. "replaceReducer()"
 
-// 4.subscribe
-store.subscribe(()=>console.log('Action dispatched'))
+// 4.subscribe "executes for every dispatch"
+store.subscribe(()=>console.log(store.getState()))
 
 // 3.dispatch is used for triggering reducer with payload if rewuired.
 store.dispatch({type: 'add_todo', payload:{todoText: 'todo 2'}})
+store.dispatch({type: 'add_todo', payload:{todoText: 'todo 3'}})
 console.log(store.getState());
 
